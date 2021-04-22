@@ -12,22 +12,30 @@ contract WithVestingPermille is BaseAuth {
     
     IPermille private _issuedVestingPermilleContract;
     IPermille private _bonusesVestingPermilleContract;
+    IPermille private _rewardsVestingPermilleContract;
 
     /**
      * @dev Set Vesting Permille Contract(s).
      */
-    function setIRPC(address issuedVestingPermilleContract)
+    function setIVPC(address issuedVestingPermilleContract)
         external
         onlyAgent
     {
         _issuedVestingPermilleContract = IPermille(issuedVestingPermilleContract);
     }
 
-    function setBRPC(address bonusesVestingPermilleContract)
+    function setBVPC(address bonusesVestingPermilleContract)
         external
         onlyAgent
     {
         _bonusesVestingPermilleContract = IPermille(bonusesVestingPermilleContract);
+    }
+
+    function setRVPC(address rewardsVestingPermilleContract)
+        external
+        onlyAgent
+    {
+        _rewardsVestingPermilleContract = IPermille(rewardsVestingPermilleContract);
     }
 
     /**
@@ -38,11 +46,13 @@ contract WithVestingPermille is BaseAuth {
         view
         returns (
             IPermille issuedVestingPermilleContract,
-            IPermille bonusesVestingPermilleContract
+            IPermille bonusesVestingPermilleContract,
+            IPermille rewardsVestingPermilleContract
         )
     {
         issuedVestingPermilleContract = _issuedVestingPermilleContract;
         bonusesVestingPermilleContract = _bonusesVestingPermilleContract;
+        rewardsVestingPermilleContract = _rewardsVestingPermilleContract;
     }
 
     /**
@@ -68,6 +78,20 @@ contract WithVestingPermille is BaseAuth {
     {
         if (amount > 0) {
             vesting = _getVestingAmount(amount, _bonusesVestingPermilleContract, 1_000);
+        }
+    }
+    
+    
+    /**
+     * @dev Returns vesting amount for rewards of `amount`.
+     */
+    function _getVestingAmountForRewards(uint256 amount)
+        internal
+        view
+        returns (uint256 vesting)
+    {
+        if (amount > 0) {
+            vesting = _getVestingAmount(amount, _rewardsVestingPermilleContract, 1_000);
         }
     }
 
